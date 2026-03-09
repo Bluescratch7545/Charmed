@@ -1,10 +1,10 @@
 {
-	"geode": "4.9.0",
+	"geode": "5.0.0-beta.4",
 	"gd": {
-		"win": "2.2074",
-		"android": "2.2074",
-		"mac": "2.2074",
-		"ios": "2.2074"
+		"win": "2.2081",
+		"android": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081"
 	},
 	"id": "bluescratch.charmed",
 	"name": "Charmed",
@@ -12,7 +12,8 @@
 	"developer": "Bluescratch",
 	"description": "Adds Hollow Knights Charms To GD!",
 	"dependencies": {
-		"geode.node-ids": ">=v1.20.0"
+		"geode.node-ids": ">=v1.20.0",
+		"alk.better-touch-prio": ">=1.0.0"
 	},
 	"resources": {
 		"sprites": [

@@ -1,33 +1,18 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
+#include "../includes/winSize.hpp"
+#include "../includes/states.hpp"
+#include "../includes/CharmsLayer.hpp"
 
 using namespace geode::prelude;
 
-#include "../includes/winSize.hpp"
-#include "../includes/states.hpp"
+CCMenu* toggleMenu = nullptr;
 
 class $modify(ChrmdMenuLayer, MenuLayer) {
-    struct Fields {
-        CCSprite* bg = nullptr;
-        int status = 0;
-        CCMenu* toggleMenu = nullptr;
-    };
     $override
     bool init() {
         if (!MenuLayer::init()) return false;
-
-        m_fields->bg = CCSprite::createWithSpriteFrameName("block005b_05_001.png");
-        m_fields->bg->setID("toggle-menu-bg"_spr);
-
-        m_fields->bg->setColor({ 0, 0, 0 });
-        this->addChild(m_fields->bg);
-        m_fields->bg->setScale(66.725f);
-        m_fields->bg->setOpacity(140.5);
-        m_fields->bg->setVisible(false);
-        m_fields->bg->setPosition({-1000, 1000});
-        m_fields->bg->setZOrder(998);
-
-        auto bottomMenu = getChildByID("bottom-menu");
+        auto CharmsLayer = CharmsLayer::create();
 
         auto charmBtn = CCMenuItemSpriteExtra::create(
             CCSprite::createWithSpriteFrameName("GJ_plainBtn_001.png"),
@@ -64,54 +49,106 @@ class $modify(ChrmdMenuLayer, MenuLayer) {
             1.0f
         );
         furyOfTheFallen->toggle(Singelton::get().glob_fOTF_state);
+        furyOfTheFallen->setID("fury-of-the-fallen"_spr);
 
-        m_fields->toggleMenu = CCMenu::create();
+        toggleMenu = CCMenu::create();
 
-        m_fields->toggleMenu->setID("toggle-menu"_spr);
-        m_fields->toggleMenu->setLayout(RowLayout::create());
-        m_fields->toggleMenu->setZOrder(1000);
-        m_fields->toggleMenu->setPosition({-1000, 1000});
-        m_fields->toggleMenu->addChild(furyOfTheFallen);
-        m_fields->toggleMenu->updateLayout();
-        m_fields->toggleMenu->setVisible(false);
-        this->addChild(m_fields->toggleMenu);
-        furyOfTheFallen->setPosition({58.90, 102});
+        auto fOTFMenu = CCMenu::create();
+        fOTFMenu->setID("fury-of-the-fallen-menu"_spr);
+
+        toggleMenu->setID("toggle-menu"_spr);
+        toggleMenu->setLayout(RowLayout::create());
+        fOTFMenu->setLayout(RowLayout::create());
+        toggleMenu->setZOrder(1000);
+        toggleMenu->setPosition({-1000, 1000});
+        toggleMenu->addChild(fOTFMenu);
+        fOTFMenu->addChild(furyOfTheFallen);
+        fOTFMenu->setPosition({118.90, 249});
+        furyOfTheFallen->setPosition({234, 146});
+        toggleMenu->setVisible(false);
+        this->addChild(toggleMenu);
         auto furyOfTheFallenText = CCLabelBMFont::create("Fury of the fallen", "bigFont.fnt");
-        m_fields->toggleMenu->addChild(furyOfTheFallenText);
-        furyOfTheFallenText->setPosition({145.50, 102});
+        furyOfTheFallenText->setID("fury-of-the-fallen-text"_spr);
+        fOTFMenu->addChild(furyOfTheFallenText);
+        furyOfTheFallenText->setPosition({326, 146});
         furyOfTheFallenText->setScale(0.42500000);
 
-        auto chrmIco = CCSprite::create("furyOfTheFallen.png"_spr);
-        chrmIco->setID("fury-of-the-fallen-icon"_spr);
+        auto fOTFChrmIco = CCMenuItemSpriteExtra::create(
+            CCSprite::create("furyOfTheFallen.png"_spr),
+            this,
+            menu_selector(ChrmdMenuLayer::fOTFChrmInfoBtnClicked)
+        );
 
-        m_fields->toggleMenu->addChild(chrmIco);
-        chrmIco->setPosition({235, 102});
-        chrmIco->setScale(0.4);
+        fOTFChrmIco->setID("fury-of-the-fallen-icon"_spr);
+
+        fOTFMenu->addChild(fOTFChrmIco);
+        fOTFChrmIco->setPosition({416, 145});
+        fOTFChrmIco->setScale(0.4);
+        fOTFChrmIco->m_baseScale = 0.4;
+
+        auto lifebloodHeart = CCMenuItemToggler::createWithStandardSprites(
+            this,
+            menu_selector(ChrmdMenuLayer::lHChrmOn),
+            1.0f
+        );
+        lifebloodHeart->toggle(Singelton::get().glob_lH_state);
+        lifebloodHeart->setID("lifeblood-heart"_spr);
+
+        auto lHMenu = CCMenu::create();
+        lHMenu->setID("lifeblood-heart-menu"_spr);
+
+        toggleMenu->addChild(lHMenu);
+        lHMenu->setLayout(RowLayout::create());
+        lHMenu->addChild(lifebloodHeart);
+        lHMenu->setPosition({118.90, 209});
+        lifebloodHeart->setPosition({234, 146});
+        auto lifebloodHeartText = CCLabelBMFont::create("Lifeblood heart", "bigFont.fnt");
+        lifebloodHeartText->setID("lifeblood-heart-text"_spr);
+        lifebloodHeartText->setScale(0.525);
+        lHMenu->addChild(lifebloodHeartText);
+        lifebloodHeartText->setPosition({325, 146});
+
+        auto lHChrmIco = CCMenuItemSpriteExtra::create(
+            CCSprite::create("lifebloodHeart.png"_spr),
+            this,
+            menu_selector(ChrmdMenuLayer::lHChrmInfoBtnClicked)
+        );
+        lHChrmIco->setID("lifeblood-heart-icon"_spr);
+        lHMenu->addChild(lHChrmIco);
+        lHChrmIco->setPosition({415, 147});
+        lHChrmIco->m_baseScale = 0.4;
+        lHChrmIco->setScale(0.4);
 
         return true;
     }
 
-    void onChrmBtnClicked(CCObject* sender) {
-        if(m_fields->status == 0) {
-            m_fields->bg->setPosition({winSize.width / 2, winSize.height / 2});
-            m_fields->bg->setVisible(true);
-            m_fields->status = 1;
-            m_fields->toggleMenu->setPosition({winSize.width / 2, winSize.height / 2});
-            m_fields->toggleMenu->setVisible(true);
-        }
-        else {
-            m_fields->bg->setPosition({-1000, 1000});
-            m_fields->bg->setVisible(false);
-            m_fields->status = 0;
-            m_fields->toggleMenu->setPosition({-1000, 1000});
-            m_fields->toggleMenu->setVisible(false);
-            
-        }
+    void onChrmBtnClicked(CCObject*) {
+        CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, CharmsLayer::scene()));
     }
-    //193 102
 
     void fOTFChrmOn(CCObject* sender) {
         Singelton::get().glob_fOTF_state = !static_cast<CCMenuItemToggler*>(sender)->isToggled();
-        log::info("Toggled {}", Singelton::get().glob_fOTF_state);
+        log::info("Fury of the fallen: Toggled {}", Singelton::get().glob_fOTF_state);
+    }
+
+    void lHChrmOn(CCObject* sender) {
+        Singelton::get().glob_lH_state = !static_cast<CCMenuItemToggler*>(sender)->isToggled();
+        log::info("Lifeblood heart: Toggled {}", Singelton::get().glob_lH_state);
+    }
+
+    void fOTFChrmInfoBtnClicked(CCObject* sender) {
+        FLAlertLayer::create(
+            "Charm Info",
+            "This charm acts like noclip. Use it wisely.",
+            "I Understand"
+        )->show();
+    }
+
+    void lHChrmInfoBtnClicked(CCObject* sender) {
+        FLAlertLayer::create(
+            "Charm Info",
+            "This charm acts like Noclip deaths, set to 2",
+            "I Understand"
+        )->show();
     }
 };

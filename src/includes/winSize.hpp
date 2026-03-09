@@ -2,4 +2,4 @@
 #include <Geode/Geode.hpp>
 using namespace geode::prelude;
 
-auto winSize = CCDirector::sharedDirector()->getWinSize();
+CCSize winSize = CCDirector::sharedDirector()->getWinSize();

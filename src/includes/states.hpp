@@ -10,4 +10,5 @@ public:
         return instance;
     }
     bool glob_fOTF_state = false;
+    bool glob_lH_state = false;
 };
